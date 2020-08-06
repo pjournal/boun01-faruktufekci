@@ -1,4 +1,4 @@
-## My Progress Journal
+## Assignments
 
 ### Assignment 1: RMarkdown Practice
 
