@@ -1,0 +1,38 @@
+---
+title: "Assignment I: RMarkdown Practice"
+author: "Faruk Tufekci"
+date: "8/5/2020"
+output: html_document
+---
+
+**PS:** It is updated at **8/25/2020**
+
+
+
+
+Hi, there :d I am a senior student studying Industrial Engineering at Boğaziçi University. I am very interested in machine learning and deep learning topics so that I completed courses like Data Mining and Graph Theory. I did multiple internships on data science fields like machine learning and optimization. I am going to be full time Data Scientist or ML Engineer.
+
+## Statistical Models for Sport in R
+
+This is of course about constructing statistical predictive models in sports area. In this field the well known, popular tasks are about to predict future winners. I found this interesting because in statistics course (IE256-Baydogan) one of our homework assignment was about football betting. We only used multiple linear regression to predict the winner since it was an introductory course. 
+
+By the way, did you know that the Pythagorean theorem is quite powerful to predict win expectations? I didn't know too. It is actually great to prove that complex models aren't always better, solving the problem easily as much as possible is much better.
+
+[Click to See The Related Video](https://www.youtube.com/watch?v=01bqkYZSOzw)
+
+## useR! 2020: rtables (G. Becker), regular
+
+This is about a pretty new package.
+
+[Click to See The Related Video](https://www.youtube.com/watch?v=CBQzZ8ZhXLA)
+
+## C
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Link --> <http://rmarkdown.rstudio.com>.
+
+### LinkedIn
+You can access my profile via [this](https://www.linkedin.com/in/faruktufekci/?locale=en_US).
