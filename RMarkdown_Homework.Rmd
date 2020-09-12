@@ -7,6 +7,8 @@ output: html_document
 
 **PS:** It is updated at **8/25/2020**
 
+**PS2:** It is updated again at **9/10/2020**
+
 
 
 
@@ -22,17 +24,39 @@ By the way, did you know that the Pythagorean theorem is quite powerful to predi
 
 ## useR! 2020: rtables (G. Becker), regular
 
-This is about a pretty new package.
+This is about a pretty new package. It's still under development and it's quite interesting that these studies are fully funded by Roche, the medicine firm. I found it interesting because I had a chance to meet people from Roche and I didn't expect open-sourced contributions from firms like Roche :)
+
+The mission of this package is related to a quite fundemental thing of analyses and visualizations in R. It makes tables more easily readable and functional by splitting rows, splitting columns, disposition tables etc. I think tables may be more useful than graphs time to time when structuring a complicated raw data into an easily readable and stylish tables is possible. 
 
 [Click to See The Related Video](https://www.youtube.com/watch?v=CBQzZ8ZhXLA)
 
-## C
+## Display your favorite XKCD comic in R
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see
+R isn't just a statistics tool. It also promises fun. Yes, fun :) One can fetch a XKCD comic strip (randomly or by number) and displays it on screen. The serious thing about this is presentations may be more creative, catchy and fluent with these kind of tools right.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+See an example below under "applied math" tag :)
 
-Link --> <http://rmarkdown.rstudio.com>.
+```{r setup, warning=FALSE, echo=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE)
+library(RXKCD)
+getXKCD(816, display = TRUE, html = FALSE, saveImg = FALSE)
+```
+
+Now an example below under "linear regression" tag :):)
+
+```{r setup2, warning=FALSE, echo=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE)
+getXKCD(1725, display = TRUE, html = FALSE, saveImg = FALSE)
+```
+
+Box plots?
+
+```{r setup3, warning=FALSE, echo=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE)
+getXKCD(1798, display = TRUE, html = FALSE, saveImg = FALSE)
+```
+
+[Click to See The Related Package/Post](https://rdrr.io/cran/RXKCD/man/getXKCD.html)
 
 ### LinkedIn
 You can access my profile via [this](https://www.linkedin.com/in/faruktufekci/?locale=en_US).
