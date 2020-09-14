@@ -1,0 +1,46 @@
+---
+title: "Spam Detection: UCI Spambase"
+author: "Faruk Tufekci"
+date: "9/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+data <- read.csv("spam.csv", header = TRUE)
+```
+
+## Intro, Dataset
+
+The topic of this study is clear, unfortunately very common thing, right? Spam mails ... You probably have more than one email accounts because (at least) one of them is for subscriptions that may forward spam mails to you. This is one way to cope with spam mails; however, it's not a good fight I think. I've found more clever way to fight spam ..or at least make it more enjoyful process. Watch the video below, it's pretty short :)
+
+ 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/mrh9KbhrXD8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+Quite funny right? :)
+
+The spam and promotional emails are two separate things. The word "spam" in mails means "unsolicited bulk mails". Unsolicited is the key word there. Unsolicited means that the recipient has not granted verifiable permission for the message to be sent. Bulk means that the message is sent as part of a larger collection of messages, all having substantively identical content.
+
+Actually, service providers like Google are also trying to detect spam mails in an algorithmic way. In this study, I will practice classification trees trying to predict spam mails in the dataset given as example.
+
+```{r glimpse}
+glimpse(data)
+```
+
+As seen above, the dataset includes 48 continuous real attributes of type word frequencies, 6 continuous real attributes of type char frequencies, 1 continuous real attribute of average length of uninterrupted sequences of capital letters, 1 continuous integer attribute of length of longest uninterrupted sequence of capital letters and 1 continuous integer attribute of sum of length of uninterrupted sequences of capital letters.
+
+```{r features}
+colnames(data)
+```
+
+There are also two columns for train/test split and target (spam or not) provided. There seems no missing values in these columns.
+
+## Exploratory Analyses
+
+```{r dist}
+print(paste0("Percentage: ", round((nrow(filter(data, spam == TRUE))/nrow(data)) * 100, 2), "%"))
+```
