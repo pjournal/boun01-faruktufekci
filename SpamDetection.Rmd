@@ -1,15 +1,20 @@
 ---
 title: "Spam Detection: UCI Spambase"
 author: "Faruk Tufekci"
-date: "9/14/2020"
+date: "9/13/2020"
 output: html_document
 ---
+
+**PS:** It is updated at 9/15/2020
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
+library(rpart)
+library(rpart.plot)
+library(caret)
 data <- read.csv("spam.csv", header = TRUE)
 ```
 
@@ -21,7 +26,8 @@ The topic of this study is clear, unfortunately very common thing, right? Spam m
 <iframe width="560" height="315" src="https://www.youtube.com/embed/mrh9KbhrXD8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
-Quite funny right? :)
+.
+Quite funny right? I've really loved it :)
 
 The spam and promotional emails are two separate things. The word "spam" in mails means "unsolicited bulk mails". Unsolicited is the key word there. Unsolicited means that the recipient has not granted verifiable permission for the message to be sent. Bulk means that the message is sent as part of a larger collection of messages, all having substantively identical content.
 
@@ -39,8 +45,110 @@ colnames(data)
 
 There are also two columns for train/test split and target (spam or not) provided. There seems no missing values in these columns.
 
-## Exploratory Analyses
+## Classification w/Decision Trees
+
+Let's see the distribution of the target variable which is indicating whether an email is spam or not.
 
 ```{r dist}
 print(paste0("Percentage: ", round((nrow(filter(data, spam == TRUE))/nrow(data)) * 100, 2), "%"))
 ```
+
+The ratio is quite close to be balanced dataset. In classification tasks, imbalance is very important problem to be solved from different perspectives with different methods. Some of the wellknown methods are oversampling, mice etc. But I think we don't need them for now due to dataset size and target distribution.
+
+```{r reg}
+data$spam <- as.factor(data$spam)
+
+train <- subset(data, testid == FALSE)
+test <- subset(data, testid == TRUE)
+
+train <- train[, -2]
+test <- test[, -2]
+
+print(paste0("Train > Percentage: ", round((nrow(filter(train, spam == TRUE))/nrow(data)) * 100, 2), "%"))
+print(paste0("Test  > Percentage: ", round((nrow(filter(test, spam == TRUE))/nrow(data)) * 100, 2), "%"))
+```
+
+Afte splitting data to train and test sets, wee see that target distributions differ. This is unwanted such that I would try to split the dataset based on the target distribution to see close ration in both sets. However, train-test split is already given in this task, so it's used as is.
+
+Let's quickly fit a decision tree maxdepth=2 without playing parameters for introduction. In this process, we fit over train data and then compute accuracy over test set to report the performance.
+
+```{r r3r}
+train_features <- train %>% select(-spam)
+train_labels   <- train$spam
+
+test_features <- test %>% select(-spam)
+test_labels   <- test$spam
+
+compute_accuracy <- function(fit, test_features, test_labels) {
+  predicted <- predict(fit, test_features, type = "class")
+  mean(predicted == test_labels)
+}
+
+reg_tree <- rpart(spam~., data = train, control = rpart.control(maxdepth = 2))
+compute_accuracy(reg_tree, test_features, test_labels)
+```
+
+Accuracy is already not bad. Now let's try different control parameters to go further. We can test different parameter settings in a loop.
+
+```{r fe3}
+gs <- list(minsplit = c(2, 5, 10, 20, 30),
+           maxdepth = c(2, 5, 10, 20, 30)) %>% 
+    cross_df() # Convert to data frame grid
+
+mod <- function(...) {
+  rpart(spam ~ ., data = train, control = rpart.control(...))
+}
+
+gs <- gs %>% mutate(fit = pmap(gs, mod))
+
+gs <- gs %>%
+  mutate(test_accuracy = map_dbl(fit, compute_accuracy,
+                                 test_features, test_labels))
+
+print.data.frame(gs[, c("minsplit", "maxdepth", "test_accuracy")])
+```
+
+It seems that minsplit=2 and maxdepth=10 makes the classifier quite strong, rigth? Then let's construct the tree with these settings now and then browse the tree to investigate nodes.
+
+```{r disdeddet}
+reg_tree2 <- rpart(spam~., data = train, control = rpart.control(minsplit=2, maxdepth=10))
+prp(reg_tree2)
+```
+
+The tree seems better than what I expected. I was expecting to see a more complicated diagram then this. It seems that frequency of the character "$" is first step to identify spam mail in this tree. It makes sense rigth, it is very correlated to fraudulent behaviours.
+
+PS: ch4 -> $
+    ch3 -> !
+    
+Let's see the importance of the features in classifying the mails. We already have some intuition about it but let's compare feature importances via ggplot.
+
+```{r wwr}
+df <- data.frame(imp = reg_tree$variable.importance)
+df2 <- df %>% 
+    tibble::rownames_to_column() %>% 
+    dplyr::rename("variable" = rowname) %>% 
+    dplyr::arrange(imp) %>%
+    dplyr::mutate(variable = forcats::fct_inorder(variable))
+ggplot2::ggplot(df2) +
+    geom_col(aes(x = variable, y = imp),
+             col = "black", show.legend = F) +
+    coord_flip() +
+    scale_fill_grey() +
+    theme_bw()
+```
+
+"Money" and "Credit" are very expected, right?
+ch5 here is corresponding to the symbol "#".
+
+We already know that accuracy is around 89% with this setting but let's report the accuracy and confusion matrix again.
+
+```{r adc}
+confusionMatrix(predict(reg_tree2, test_features, type = "class"), test$spam, positive = 'TRUE')
+```
+
+It was really fun!
+
+### References
+
+- https://rstudio-pubs-static.s3.amazonaws.com/130453_ce178337ae974061996e680607ffd9dc.html
+- https://stackoverflow.com/questions/33767804/invalid-prediction-for-rpart-object-error
