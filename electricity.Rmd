@@ -7,6 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(viridis)
+library(hrbrthemes)
 ```
 
 ## Intro, Dataset
@@ -103,3 +105,19 @@ ggplot(melt(filter(df, hour == 23)[, c("day", "pip", "nip")], id=c("day")), aes(
   labs(x="Days in July", y="Price")
 ```
 
+At the end let's also see the breakdown of energy directions in all the days of July.
+
+```{r deefghde, warning=FALSE}
+df$dummy <- 1
+dd <- melt(df[, c("day", "direction", "dummy")], id=c("day", "direction"))
+df3 <- dd %>% group_by(day, direction) %>% summarise(Periods = sum(value))
+
+ggplot(df3, aes(fill=direction, y=Periods, x=day)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_viridis(discrete = T) +
+    ggtitle("Balance Direction") +
+    #theme_ipsum() +
+    coord_cartesian(xlim = c(1, 31), ylim = c(0, 24)) +
+    theme(axis.text.x = element_text(angle = 55, vjust = 0.5, hjust=1)) +
+    xlab("")
+```
