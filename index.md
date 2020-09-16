@@ -6,7 +6,7 @@
 
 ### Assignment 2: EDA Practice
 
-[Electricity Market Prices](https://pjournal.github.io/boun01-faruktufekci/SpamDetection.html)
+[Electricity Market Prices](https://pjournal.github.io/boun01-faruktufekci/electricity.html)
 
 ### Assignment 3: Data Mining Practice
 
