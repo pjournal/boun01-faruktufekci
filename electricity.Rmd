@@ -1,0 +1,105 @@
+---
+title: "Electricity Market Prices"
+author: "Faruk Tufekci"
+date: "9/16/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro, Dataset
+
+In this study, an exploratory data analysis will be made about July 2020’s electricity prices using the dataset which is accessible at [EPIAS/EXIST MCP/SMP Page](https://rapor.epias.com.tr/rapor/xhtml/ptfSmfListeleme.xhtml).
+
+```{r libs, warning=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+
+df <- readxl::read_xls('ptf-smf.xls')
+```
+
+Let's investigate the summary of the dataset by glimpse.
+
+```{r decc, warning=FALSE, message=FALSE}
+glimpse(df)
+```
+
+It seems that we need to make datetime operations to utilize date columns. Also, price columns should be converted to numeric since they are in string as is and columns should be renamed to make them easily callable.
+
+```{r e, warning=FALSE}
+cnames <- c("date", "mcp", "smp", "pip", "nip", "direction")
+colnames(df) <- cnames
+
+df$date2 <- strptime(df$date,format="%d.%m.%y %H:%M")
+df$hour <- lubridate::hour(df$date2)
+df$day <- lubridate::day(df$date2)
+
+df$mcp <- as.numeric(df$mcp)
+df$smp <- as.numeric(df$smp)
+df$pip <- as.numeric(df$pip)
+df$nip <- as.numeric(df$nip)
+```
+
+After this quick preprocess, let's see some sample rows from top and bottom of the dataset.
+
+```{r we, warning=FALSE}
+head(df)
+```
+
+```{r wsd, warning=FALSE}
+tail(df)
+```
+
+## Exploratory Analyses
+
+Let's compare MCP and SMP values at midday.
+
+```{r sed, warning=FALSE}
+ggplot(melt(filter(df, hour == 12)[, c("day", "mcp", "smp")], id=c("day")), aes(x = day, y = value, group = variable)) + 
+    geom_line(aes(color = variable, linetype = variable)) + 
+    scale_color_manual(values = c("darkred", "steelblue")) + 
+    ggtitle("MCP vs. SMP - Midday") +
+    theme(axis.text.x = element_text(angle = 55, vjust = 0.5, hjust=1)) +
+  labs(x="Days in July", y="Price")
+```
+
+Let's also see this comparison at day ends. It seems that MCP flattens out late in the day.
+
+```{r sd, warning=FALSE}
+ggplot(melt(filter(df, hour == 23)[, c("day", "mcp", "smp")], id=c("day")), aes(x = day, y = value, group = variable)) + 
+    geom_line(aes(color = variable, linetype = variable)) + 
+    scale_color_manual(values = c("darkred", "steelblue")) + 
+    ggtitle("MCP vs. SMP - End of the Days") +
+    theme(axis.text.x = element_text(angle = 55, vjust = 0.5, hjust=1)) +
+  labs(x="Days in July", y="Price")
+```
+
+The imbalance prices are calculated as below;
+- Positive Imbalance Price (TL/MWh) = 0,97*min(MCP,SMP)
+- Negative Imbalance Price (TL/MWh)= 1,03*max(MCP,SMP)
+
+Let's compare them at midday.
+
+```{r de3de, warning=FALSE}
+ggplot(melt(filter(df, hour == 12)[, c("day", "pip", "nip")], id=c("day")), aes(x = day, y = value, group = variable)) + 
+    geom_line(aes(color = variable, linetype = variable)) + 
+    scale_color_manual(values = c("darkred", "steelblue")) + 
+    ggtitle("Positive vs. Negative Imbalance Prices - Midday") +
+    theme(axis.text.x = element_text(angle = 55, vjust = 0.5, hjust=1)) +
+  labs(x="Days in July", y="Price")
+```
+
+Similar to previous, let's see the comparison again at the end of days. It seems that the gap between them is getting larger at the end of days, right?
+
+```{r dede, warning=FALSE}
+ggplot(melt(filter(df, hour == 23)[, c("day", "pip", "nip")], id=c("day")), aes(x = day, y = value, group = variable)) + 
+    geom_line(aes(color = variable, linetype = variable)) + 
+    scale_color_manual(values = c("darkred", "steelblue")) + 
+    ggtitle("Positive vs. Negative Imbalance Prices - End of the Days") +
+    theme(axis.text.x = element_text(angle = 55, vjust = 0.5, hjust=1)) +
+  labs(x="Days in July", y="Price")
+```
+
